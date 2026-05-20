@@ -1,0 +1,379 @@
+#!/usr/bin/env node
+
+import {
+  readdirSync,
+  readFileSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
+import { extname, join } from "node:path";
+
+const inputPath = process.argv[2] ?? "src";
+
+const sourceExtensions = new Set([".ts", ".tsx"]);
+
+const styleBlock = `<style>
+.doc-collapse summary .when-open {
+  display: none;
+}
+
+.doc-collapse[open] summary .when-closed {
+  display: none;
+}
+
+.doc-collapse[open] summary .when-open {
+  display: inline;
+}
+</style>`;
+
+function lineCommentToMarkdown(line: string): string | null {
+  const match = line.match(/^\s*\/\/\s?(.*)$/);
+  return match ? match[1] : null;
+}
+
+function blockCommentStart(line: string): RegExpMatchArray | null {
+  return line.match(/^(\s*)\/\*(\*)?/);
+}
+
+function stripBlockCommentDecoration(line: string): string {
+  return line.replace(/^\s+\* ?/, "");
+}
+
+function countLeadingWhitespace(line: string): number {
+  return line.match(/^\s*/)?.[0].length ?? 0;
+}
+
+function stripBlockIndent(line: string, indent: string): string {
+  return indent && line.startsWith(indent) ? line.slice(indent.length) : line;
+}
+
+function normalizeBlockCommentLines(lines: string[], indent: string): string[] {
+  const unindentedLines = lines.map((line) => stripBlockIndent(line, indent));
+  const undecoratedLines = unindentedLines.map(stripBlockCommentDecoration);
+  const nonEmptyLines = undecoratedLines.filter((line) => line.trim() !== "");
+  const commonIndent =
+    nonEmptyLines.length > 0
+      ? Math.min(...nonEmptyLines.map(countLeadingWhitespace))
+      : 0;
+
+  if (commonIndent === 0) {
+    return undecoratedLines;
+  }
+
+  return undecoratedLines.map((line) =>
+    line.trim() === "" ? "" : line.slice(commonIndent)
+  );
+}
+
+function getMarkdownCommentLines(source: string): string[] {
+  const markdownLines: string[] = [];
+  let blockCommentLines: string[] | null = null;
+  let blockCommentIndent = "";
+
+  function flushBlockComment() {
+    if (blockCommentLines) {
+      markdownLines.push(
+        ...normalizeBlockCommentLines(blockCommentLines, blockCommentIndent)
+      );
+      blockCommentLines = null;
+      blockCommentIndent = "";
+    }
+  }
+
+  for (const line of source.split(/\r?\n/)) {
+    if (blockCommentLines) {
+      const endIndex = line.indexOf("*/");
+
+      if (endIndex === -1) {
+        blockCommentLines.push(line);
+        continue;
+      }
+
+      blockCommentLines.push(line.slice(0, endIndex));
+      flushBlockComment();
+      continue;
+    }
+
+    const lineMarkdown = lineCommentToMarkdown(line);
+
+    if (lineMarkdown !== null) {
+      markdownLines.push(lineMarkdown);
+      continue;
+    }
+
+    const start = blockCommentStart(line);
+
+    if (!start) {
+      continue;
+    }
+
+    const afterOpen = line.slice(start[0].length);
+    const endIndex = afterOpen.indexOf("*/");
+
+    if (endIndex === -1) {
+      blockCommentLines = [afterOpen];
+      blockCommentIndent = start[1] ?? "";
+      continue;
+    }
+
+    markdownLines.push(
+      ...normalizeBlockCommentLines(
+        [afterOpen.slice(0, endIndex)],
+        start[1] ?? ""
+      )
+    );
+  }
+
+  flushBlockComment();
+  return markdownLines;
+}
+
+function hasLiteratorOptIn(source: string): boolean {
+  return getMarkdownCommentLines(source).some((line) =>
+    /^@literator-literate\s*$/.test(line)
+  );
+}
+
+function isGeneratedLiteratorFile(filePath: string): boolean {
+  return filePath.endsWith(".literated.md");
+}
+
+function isDeclarationFile(filePath: string): boolean {
+  return filePath.endsWith(".d.ts");
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
+}
+
+function makeSummary(title: string | undefined): string {
+  const trimmedTitle = title?.trim();
+
+  if (trimmedTitle) {
+    return `<summary>${escapeHtml(trimmedTitle)}</summary>`;
+  }
+
+  return [
+    "<summary>",
+    '<span class="when-closed" style="color: #64748b;">Expand this section</span>',
+    '<span class="when-open" style="color: #64748b;">Collapse this section</span>',
+    "</summary>",
+  ].join("");
+}
+
+function sourceToMarkdown(source: string, language: string): string {
+  const lines = source.split(/\r?\n/);
+
+  const parts: string[] = [styleBlock];
+
+  let codeBuffer: string[] = [];
+  let markdownBuffer: string[] = [];
+  let blockCommentLines: string[] | null = null;
+  let blockCommentIndent = "";
+
+  function flushCode() {
+    const code = codeBuffer.join("\n").trim();
+
+    if (code) {
+      parts.push("```" + language + "\n" + code + "\n```");
+    }
+
+    codeBuffer = [];
+  }
+
+  function flushMarkdown() {
+    const markdown = markdownBuffer.join("\n").trim();
+
+    if (markdown) {
+      parts.push(markdown);
+    }
+
+    markdownBuffer = [];
+  }
+
+  function flushAll() {
+    flushCode();
+    flushMarkdown();
+  }
+
+  function addMarkdownLine(markdown: string) {
+    flushCode();
+
+    if (/^@literator-literate\s*$/.test(markdown)) {
+      return;
+    }
+
+    const collapseStart = markdown.match(/^@literator-collapse-start\s*(.*)$/);
+    const collapseEnd = markdown.match(/^@literator-collapse-end\s*$/);
+
+    if (collapseStart) {
+      flushMarkdown();
+
+      parts.push(
+        `<div style="margin-bottom: 1rem;">\n\n<details class="doc-collapse">\n${makeSummary(collapseStart[1])}`
+      );
+
+      return;
+    }
+
+    if (collapseEnd) {
+      flushMarkdown();
+      parts.push("</details>\n\n</div>");
+      return;
+    }
+
+    markdownBuffer.push(markdown);
+  }
+
+  function flushBlockComment() {
+    if (!blockCommentLines) {
+      return;
+    }
+
+    for (const markdown of normalizeBlockCommentLines(
+      blockCommentLines,
+      blockCommentIndent
+    )) {
+      addMarkdownLine(markdown);
+    }
+
+    blockCommentLines = null;
+    blockCommentIndent = "";
+  }
+
+  for (const line of lines) {
+    if (blockCommentLines) {
+      const endIndex = line.indexOf("*/");
+
+      if (endIndex === -1) {
+        blockCommentLines.push(line);
+        continue;
+      }
+
+      blockCommentLines.push(line.slice(0, endIndex));
+      flushBlockComment();
+
+      const trailingCode = line.slice(endIndex + 2);
+
+      if (trailingCode.trim()) {
+        flushMarkdown();
+        codeBuffer.push(trailingCode);
+      }
+
+      continue;
+    }
+
+    const markdown = lineCommentToMarkdown(line);
+
+    if (markdown !== null) {
+      addMarkdownLine(markdown);
+      continue;
+    }
+
+    const start = blockCommentStart(line);
+
+    if (start) {
+      flushCode();
+
+      const afterOpen = line.slice(start[0].length);
+      const endIndex = afterOpen.indexOf("*/");
+
+      if (endIndex === -1) {
+        blockCommentLines = [afterOpen];
+        blockCommentIndent = start[1] ?? "";
+      } else {
+        blockCommentLines = [afterOpen.slice(0, endIndex)];
+        blockCommentIndent = start[1] ?? "";
+        flushBlockComment();
+
+        const trailingCode = afterOpen.slice(endIndex + 2);
+
+        if (trailingCode.trim()) {
+          flushMarkdown();
+          codeBuffer.push(trailingCode);
+        }
+      }
+
+      continue;
+    }
+
+    flushMarkdown();
+    codeBuffer.push(line);
+  }
+
+  if (blockCommentLines) {
+    flushBlockComment();
+  }
+
+  flushAll();
+
+  return parts.join("\n\n") + "\n";
+}
+
+function getSourceFiles(dir: string): string[] {
+  const files: string[] = [];
+
+  for (const entry of readdirSync(dir)) {
+    const fullPath = join(dir, entry);
+    const stats = statSync(fullPath);
+
+    if (stats.isDirectory()) {
+      files.push(...getSourceFiles(fullPath));
+      continue;
+    }
+
+    if (!stats.isFile()) {
+      continue;
+    }
+
+    if (isGeneratedLiteratorFile(fullPath)) {
+      continue;
+    }
+
+    if (isDeclarationFile(fullPath)) {
+      continue;
+    }
+
+    if (sourceExtensions.has(extname(fullPath))) {
+      files.push(fullPath);
+    }
+  }
+
+  return files;
+}
+
+function outputFileFor(sourceFile: string): string {
+  return sourceFile + ".literated.md";
+}
+
+const sourceFiles = getSourceFiles(inputPath);
+
+let generatedCount = 0;
+let skippedCount = 0;
+
+for (const sourceFile of sourceFiles) {
+  const extension = extname(sourceFile);
+  const language = extension === ".tsx" ? "tsx" : "ts";
+
+  const source = readFileSync(sourceFile, "utf8");
+
+  if (!hasLiteratorOptIn(source)) {
+    skippedCount += 1;
+    continue;
+  }
+
+  const markdown = sourceToMarkdown(source, language);
+  const outputFile = outputFileFor(sourceFile);
+
+  writeFileSync(outputFile, markdown, "utf8");
+
+  generatedCount += 1;
+  console.log(`${sourceFile} -> ${outputFile}`);
+}
+
+console.log(
+  `Generated ${generatedCount} literated Markdown file(s). Skipped ${skippedCount} unmarked source file(s).`
+);

@@ -1,0 +1,30 @@
+{
+  "name": "literator",
+  "version": "0.1.0",
+  "description": "Generate readable Markdown walkthroughs from marked TypeScript source files.",
+  "type": "module",
+  "bin": {
+    "literator": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "AGENTS.md"
+  ],
+  "keywords": [
+    "literate-programming",
+    "typescript",
+    "markdown",
+    "documentation",
+    "docs",
+    "cli"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.0.0"
+  }
+}

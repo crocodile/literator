@@ -1,0 +1,212 @@
+# Literator
+
+Generate readable Markdown walkthroughs from TypeScript source files.
+
+Literator is source-first documentation: your `.ts` and `.tsx` files stay the source of truth, and generated Markdown is saved beside them.
+
+## Quickstart
+
+### ✏️ Choose the source files to literate
+Annotate them with:
+
+```ts
+// @literator-literate
+```
+
+### 📝 Write comments with Markdown syntax:
+
+```ts
+/*
+# This is my header
+
+Starting a <strong>paragraph</strong> here,
+for documentation...
+*/
+```
+
+### ▶️ Run Literator:
+
+```bash
+npx literator
+```
+
+### 🏁 Done
+Markdown is generated beside each marked source file:
+
+```text
+src/index.ts -> src/index.ts.literated.md
+```
+
+<br>
+
+## Example
+
+### Source code:
+
+```ts
+// @literator-literate
+
+// # Pancake order
+//
+// This tiny file walks through a mighty little pancake orchestrator:
+//
+// 1. Get the recipe.
+// 2. Make pancakes.
+// 3. Say it is done.
+//
+// ```mermaid
+// flowchart LR
+//   Recipe[Get recipe] --> Pancakes[Make pancakes]
+//   Pancakes --> Done([Done])
+// ```
+
+// ## 1. Get the recipe
+//
+// A real app might summon this recipe from a cooking wizard.
+// This example keeps the recipe as a tiny local stub.
+
+function getRecipe(): string {
+  return "pancake recipe";
+}
+
+// ## 2. Make pancakes
+//
+// Now the batter meets the pan. No drama, just pancakes.
+
+function makePancakes(recipe: string): string {
+  return `Made pancakes from ${recipe}`;
+}
+
+// ## 3. Say it is done
+//
+// Breakfast is served.
+
+const recipe = getRecipe();
+const pancakes = makePancakes(recipe);
+
+console.log(`${pancakes}. Done!`);
+```
+
+### Generated Markdown output:
+
+````md
+# Pancake order
+
+This tiny file walks through a mighty little pancake orchestrator:
+
+1. Get the recipe.
+2. Make pancakes.
+3. Say it is done.
+
+```mermaid
+flowchart LR
+  Recipe[Get recipe] --> Pancakes[Make pancakes]
+  Pancakes --> Done([Done])
+```
+
+## 1. Get the recipe
+
+A real app might summon this recipe from a cooking wizard.
+This example keeps the recipe as a tiny local stub.
+
+```ts
+function getRecipe(): string {
+  return "pancake recipe";
+}
+```
+
+## 2. Make pancakes
+
+Now the batter meets the pan. No drama, just pancakes.
+
+```ts
+function makePancakes(recipe: string): string {
+  return `Made pancakes from ${recipe}`;
+}
+```
+
+## 3. Say it is done
+
+Breakfast is served.
+
+```ts
+const recipe = getRecipe();
+const pancakes = makePancakes(recipe);
+
+console.log(`${pancakes}. Done!`);
+```
+````
+
+See the generated example: [examples/src/index.ts.literated.md](examples/src/index.ts.literated.md).
+
+<br>
+
+## Options
+
+### ⚙️ Install it locally
+
+If that's what you prefer:
+
+```bash
+npm install -D literator
+```
+<br>
+
+### ▶️ Literating
+
+By default, Literator scans the `src` folder. To scan a different folder:
+
+```bash
+npx literator app
+```
+
+Only `.ts` and `.tsx` files are supported for now.
+
+<br>
+
+### 📝 Markdown in the Comments
+
+Line comments become Markdown:
+
+```ts
+// ## A Markdown heading
+//
+// Markdown prose here.
+```
+
+Standalone block comments also become Markdown:
+
+```ts
+/*
+## Another heading
+
+More Markdown prose here.
+*/
+```
+
+There is no sorcery here, normal Markdown features just work naturally, including Mermaid diagrams and images:
+
+```ts
+// ```mermaid
+// flowchart LR
+//   A --> B
+// ```
+//
+// ![Diagram](./images/diagram.png)
+```
+
+None of the Literator annotations appear in the Markdown.
+
+<br>
+
+### ↕️ Collapsible Sections
+
+When there is too much going on in the Markdown, these sections are collapsible and expandable to keep the view tidy.
+
+```ts
+// @literator-collapse-start Internal notes
+// This content is collapsed by default.
+// @literator-collapse-end
+```
+
+If the title is omitted, Literator uses: `Expand this section` / `Collapse this section`.
