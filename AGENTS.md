@@ -43,30 +43,28 @@ Use the opt-in annotation near the top of a file:
 // @literator-literate
 ```
 
-Write comments as Markdown that reads from top to bottom:
+Write longer prose in standalone block comments when it improves readability:
 
 ```ts
-// # Pancake order
-//
-// This tiny file walks through a mighty little pancake orchestrator:
-//
-// 1. Get the recipe.
-// 2. Make pancakes.
-// 3. Say it is done.
+/*
+# Pancake order
+
+This tiny file walks through a mighty little pancake orchestrator:
+
+1. Get the recipe.
+2. Make pancakes.
+3. Say it is done.
+*/
 
 function getRecipe(): string {
   return "pancake recipe";
 }
 ```
 
-Standalone block comments can also hold Markdown:
+Line comments are also fine for short notes:
 
 ```ts
-/*
-## Notes
-
-This prose becomes Markdown too.
-*/
+// This prose becomes Markdown too.
 ```
 
 Mermaid diagrams and images work because comments become Markdown:
