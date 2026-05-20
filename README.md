@@ -2,13 +2,13 @@
 
 Generate readable Markdown walkthroughs from TypeScript source files.
 
-Think of it as augmented source code for richer documentation: headings, prose, lists, diagrams, images, and small asides, all generated from the source file itself.
+Literator turns source comments into richer Markdown documentation: headings, prose, lists, diagrams, images, and small asides.
 
-It is useful when normal comments are not quite enough, but a separate documentation system would be too much.
+The generated walkthrough includes the code too, so remains a readable reference for the implementation.
 
-It also helps with a common problem: documentation and source code drift apart easily. Literator keeps the source file as the single source of truth, and the Markdown walkthrough can be regenerated whenever the code changes.
+The source file stays the single source of truth. When the code changes, regenerate the Markdown walkthrough.
 
-Literator is intentionally simple: one small script, no config, no AST parsing. Sometimes that is better than separate docs, and often it is all you need.
+It is intentionally simple: one small script, no config, no AST parsing.
 
 ```mermaid
 %%{init: {"themeVariables": {"fontSize": "18px"}}}%%
