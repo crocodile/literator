@@ -4,7 +4,7 @@ Generate readable Markdown walkthroughs from TypeScript source files.
 
 Literator turns source comments into richer Markdown documentation: headings, prose, lists, diagrams, images, and small asides.
 
-The generated walkthrough includes the code too, so it remains a readable reference for the implementation.
+The generated walkthrough keeps the full code alongside the prose, so it remains a complete, readable reference for the implementation.
 
 The source file stays the single source of truth. When the code changes, regenerate the Markdown walkthrough.
 
@@ -202,7 +202,7 @@ Only `.ts` and `.tsx` files are supported for now.
 
 ### 📝 Markdown in the Comments
 
-Line comments become Markdown:
+Line comments are read as Markdown:
 
 ```ts
 // ## A Markdown heading
@@ -210,7 +210,7 @@ Line comments become Markdown:
 // Markdown prose here.
 ```
 
-Standalone block comments also become Markdown:
+Standalone block comments are read as Markdown too:
 
 ```ts
 /*
