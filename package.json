@@ -7,7 +7,8 @@
     "literator": "dist/cli.js"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "literate:example": "node dist/cli.js examples/src"
   },
   "files": [
     "dist",
