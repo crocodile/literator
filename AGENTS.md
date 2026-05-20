@@ -98,12 +98,6 @@ If no title is provided, Literator uses:
 Expand this section
 ```
 
-and when expanded:
-
-```text
-Collapse this section
-```
-
 Collapse annotations wrap content in `<details>`; they do not remove the content.
 
 ## Commands

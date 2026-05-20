@@ -110,17 +110,13 @@ flowchart LR
 
 ## 1. Get the recipe
 
-<div style="margin-bottom: 1rem;">
-
-<details class="doc-collapse">
+<details>
 <summary>Why this is a stub</summary>
 
 A real app might summon the instructions from a cooking wizard.
 For this demo, we keep the steps local.
 
 </details>
-
-</div>
 
 ```ts
 function getRecipe(): string {
@@ -225,4 +221,4 @@ When there is too much going on in the Markdown, these sections are collapsible 
 // @literator-collapse-end
 ```
 
-If the title is omitted, Literator uses: `Expand this section` / `Collapse this section`.
+If the title is omitted, Literator uses: `Expand this section`.
