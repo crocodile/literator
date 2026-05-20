@@ -28,8 +28,17 @@ flowchart LR
 
 ## 1. Get the recipe
 
-A real app might summon this recipe from a cooking wizard.
-This example keeps the recipe as a tiny local stub.
+<div style="margin-bottom: 1rem;">
+
+<details class="doc-collapse">
+<summary>Why this is a stub</summary>
+
+A real app might summon the instructions from a cooking wizard.
+For this demo, we keep the steps local.
+
+</details>
+
+</div>
 
 ```ts
 function getRecipe(): string {
@@ -49,7 +58,7 @@ function makePancakes(recipe: string): string {
 
 ## 3. Say it is done
 
-Breakfast is served.
+The pancakes have landed.
 
 ```ts
 const recipe = getRecipe();

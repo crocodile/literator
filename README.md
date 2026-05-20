@@ -4,6 +4,8 @@ Generate readable Markdown walkthroughs from TypeScript source files.
 
 Literator is source-first documentation: your `.ts` and `.tsx` files stay the source of truth, and generated Markdown is saved beside them.
 
+It's on purpose kept simple, done by a single script. Often better than separate docs, and sometimes it's all you need.
+
 ## Quickstart
 
 ### ✏️ Choose the source files to literate
@@ -62,8 +64,10 @@ src/index.ts -> src/index.ts.literated.md
 
 // ## 1. Get the recipe
 //
-// A real app might summon this recipe from a cooking wizard.
-// This example keeps the recipe as a tiny local stub.
+// @literator-collapse-start Why this is a stub
+// A real app might summon the instructions from a cooking wizard.
+// For this demo, we keep the steps local.
+// @literator-collapse-end
 
 function getRecipe(): string {
   return "pancake recipe";
@@ -79,7 +83,7 @@ function makePancakes(recipe: string): string {
 
 // ## 3. Say it is done
 //
-// Breakfast is served.
+// The pancakes have landed.
 
 const recipe = getRecipe();
 const pancakes = makePancakes(recipe);
@@ -106,8 +110,17 @@ flowchart LR
 
 ## 1. Get the recipe
 
-A real app might summon this recipe from a cooking wizard.
-This example keeps the recipe as a tiny local stub.
+<div style="margin-bottom: 1rem;">
+
+<details class="doc-collapse">
+<summary>Why this is a stub</summary>
+
+A real app might summon the instructions from a cooking wizard.
+For this demo, we keep the steps local.
+
+</details>
+
+</div>
 
 ```ts
 function getRecipe(): string {
@@ -127,7 +140,7 @@ function makePancakes(recipe: string): string {
 
 ## 3. Say it is done
 
-Breakfast is served.
+The pancakes have landed.
 
 ```ts
 const recipe = getRecipe();
@@ -137,7 +150,7 @@ console.log(`${pancakes}. Done!`);
 ```
 ````
 
-See the generated example: [examples/src/index.ts.literated.md](examples/src/index.ts.literated.md).
+See it rendered: [examples/src/index.ts.literated.md](examples/src/index.ts.literated.md).
 
 <br>
 
