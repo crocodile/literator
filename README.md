@@ -233,6 +233,8 @@ When there is too much going on in the Markdown, these sections are collapsible 
 
 If the title is omitted, Literator uses: `Expand this section`.
 
+<br>
+
 ## License
 
 [MIT](LICENSE)
