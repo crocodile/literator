@@ -20,7 +20,7 @@ flowchart LR
   E["Literator may be useful"]
 
   A -- "Yes, additional docs are needed" --> B
-  B -- "Yes, one source of truth is preferred" --> C
+  B -- "Yes, a single source of truth is preferred" --> C
   C -- "Yes" --> D
   D -- "Yes" --> E
 ```
