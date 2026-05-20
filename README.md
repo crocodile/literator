@@ -4,7 +4,7 @@ Generate readable Markdown walkthroughs from TypeScript source files.
 
 Literator turns source comments into richer Markdown documentation: headings, prose, lists, diagrams, images, and small asides.
 
-The generated walkthrough includes the code too, so remains a readable reference for the implementation.
+The generated walkthrough includes the code too, so it remains a readable reference for the implementation.
 
 The source file stays the single source of truth. When the code changes, regenerate the Markdown walkthrough.
 
