@@ -1,6 +1,6 @@
 {
   "name": "literator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generate readable Markdown walkthroughs from marked TypeScript source files.",
   "type": "module",
   "bin": {
