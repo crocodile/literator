@@ -45,6 +45,8 @@ Markdown is generated beside each marked source file:
 src/index.ts -> src/index.ts.literated.md
 ```
 
+See [example](https://github.com/crocodile/literator/blob/master/examples/src/index.ts.literated.md).
+
 <br>
 
 ## Example
@@ -162,7 +164,7 @@ console.log(`${pancakes}. Done!`);
 ```
 ````
 
-See it rendered: [examples/src/index.ts.literated.md](examples/src/index.ts.literated.md).
+See it rendered: [examples/src/index.ts.literated.md](https://github.com/crocodile/literator/blob/master/examples/src/index.ts.literated.md).
 
 <br>
 
