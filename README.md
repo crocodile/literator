@@ -8,7 +8,7 @@ The generated walkthrough keeps the full code alongside the prose, so it remains
 
 The source file stays the single source of truth. When the code changes, regenerate the Markdown walkthrough.
 
-It is intentionally simple: one small script, no config, no AST parsing.
+Minimal by design: one small script, deterministic output, no AST parsing, no config.
 
 ![Decision flow for when Literator may be useful](https://raw.githubusercontent.com/crocodile/literator/master/docs/literator-fit.svg)
 
