@@ -1,6 +1,6 @@
 {
   "name": "literator",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Generate readable Markdown walkthroughs from marked TypeScript source files.",
   "type": "module",
   "bin": {
@@ -24,6 +24,14 @@
     "docs",
     "cli"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/crocodile/literator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/crocodile/literator/issues"
+  },
+  "homepage": "https://github.com/crocodile/literator#readme",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^22.0.0",
