@@ -10,20 +10,7 @@ The source file stays the single source of truth. When the code changes, regener
 
 It is intentionally simple: one small script, no config, no AST parsing.
 
-```mermaid
-%%{init: {"themeVariables": {"fontSize": "18px"}}}%%
-flowchart LR
-  A{"Source comments are not enough?"}
-  B{"Docs drift out of sync?"}
-  C{"A local Markdown file would be enough?"}
-  D{"A top-to-bottom walkthrough fits?"}
-  E["Literator may be useful"]
-
-  A -- "Yes, additional docs are needed" --> B
-  B -- "Yes, a single source of truth is preferred" --> C
-  C -- "Yes" --> D
-  D -- "Yes" --> E
-```
+![Decision flow for when Literator may be useful](https://raw.githubusercontent.com/crocodile/literator/master/docs/literator-fit.svg)
 
 ## Quickstart
 
