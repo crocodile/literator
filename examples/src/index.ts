@@ -1,51 +1,53 @@
-// @literator-literate
+/* @literator-literate
 
-/*
-# Pancake order
+# Product route sketch
 
-This tiny file walks through a mighty little pancake orchestrator:
-
-1. Get the recipe.
-2. Make pancakes.
-3. Say it is done.
+This Literator skeleton example walks through a product lookup, from storefront request to catalog response.
 
 ```mermaid
-flowchart LR
-  Recipe[Get recipe] --> Pancakes[Make pancakes]
-  Pancakes --> Done([Done])
+flowchart TB
+  Request([GET /api/products?sku=...]) --> Validate[Validate SKU]
+  Validate --> Cache[Check product cache]
+  Cache -->|hit| Cached[Return cached product]
+  Cache -->|miss| Api[Call catalog API]
+  Api --> Process[Process API data]
+  Process --> Reply[Return product]
 ```
 */
 
+// @literator-collapse-start Supporting Setup
+type RouteRequest = { query?: { sku?: string } };
+const cache = new Map<string, unknown>();
+// @literator-collapse-end
+
 /*
-## 1. Get the recipe
-
-@literator-collapse-start Why this is a stub
-A real app might summon the instructions from a cooking wizard.
-For this demo, we keep the steps local.
-@literator-collapse-end
+## GET /api/products
+A product page arrives with a SKU. The route follows the same order every time: identify the product, reuse known data when possible, and ask the catalog when the cache is empty.
+| Situation | Route response |
+| --- | --- |
+| Product is cached | Return the cached product |
+| Product is not cached | Ask the catalog service |
 */
-
-function getRecipe(): string {
-  return "pancake recipe";
+export async function GET(request: RouteRequest) {
+  const sku = getSku(request);
+  const body = cache.get(sku) ?? processApiData(await fetchProduct(sku));
+  return { status: 200, body };
 }
 
 /*
-## 2. Make pancakes
-
-Now the batter meets the pan. No drama, just pancakes.
+### Read the SKU
+The SKU is the product's shelf label. Once the request has a usable SKU, the rest of the lookup has something small and reliable to carry forward.
 */
-
-function makePancakes(recipe: string): string {
-  return `Made pancakes from ${recipe}`;
-}
+function getSku(request: RouteRequest) { return request.query?.sku?.trim() ?? "demo-sku"; }
 
 /*
-## 3. Say it is done
-
-The pancakes have landed.
+### Fetch Product Details
+When the cache has no answer, the catalog service becomes the source of truth. It knows the product name, price, and current details.
 */
+async function fetchProduct(sku: string): Promise<unknown> { return /* catalog request */ { sku }; }
 
-const recipe = getRecipe();
-const pancakes = makePancakes(recipe);
-
-console.log(`${pancakes}. Done!`);
+/*
+### Prepare Storefront Data
+Catalog data is usually shaped for internal systems. Before it reaches the storefront, it gets trimmed into the small product card the page actually needs.
+*/
+function processApiData(data: unknown) { return data; }

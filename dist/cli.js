@@ -79,7 +79,7 @@ function getMarkdownCommentLines(source) {
     return markdownLines;
 }
 function hasLiteratorOptIn(source) {
-    return getMarkdownCommentLines(source).some((line) => /^@literator-literate\s*$/.test(line));
+    return getMarkdownCommentLines(source).some((line) => /^\s*@literator-literate\s*$/.test(line));
 }
 function isGeneratedLiteratorFile(filePath) {
     return filePath.endsWith(".literated.md");
@@ -127,11 +127,11 @@ function sourceToMarkdown(source, language, sourceFile) {
     }
     function addMarkdownLine(markdown) {
         flushCode();
-        if (/^@literator-literate\s*$/.test(markdown)) {
+        if (/^\s*@literator-literate\s*$/.test(markdown)) {
             return;
         }
-        const collapseStart = markdown.match(/^@literator-collapse-start\s*(.*)$/);
-        const collapseEnd = markdown.match(/^@literator-collapse-end\s*$/);
+        const collapseStart = markdown.match(/^\s*@literator-collapse-start\s*(.*)$/);
+        const collapseEnd = markdown.match(/^\s*@literator-collapse-end\s*$/);
         if (collapseStart) {
             flushMarkdown();
             parts.push(`<details>\n${makeSummary(collapseStart[1])}`);
