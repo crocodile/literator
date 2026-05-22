@@ -21,7 +21,7 @@ Annotate them with:
 // @literator-literate
 ```
 
-### 📝 Write comments with Markdown syntax:
+### 📝 Write comments with Markdown syntax
 
 ```ts
 /*
@@ -32,7 +32,7 @@ for documentation...
 */
 ```
 
-### ▶️ Run Literator:
+### ▶️ Run Literator
 
 ```bash
 npx literator
